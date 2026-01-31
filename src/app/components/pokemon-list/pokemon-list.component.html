@@ -3,31 +3,25 @@
   
   <!-- Filters Section -->
   <div class="filters-section">
-    <div class="search-group">
+    <div class="search-wrapper">
       <input 
         type="text"
         [(ngModel)]="searchName"
-        (keyup.enter)="onSearch()"
         placeholder="Search by name..."
         class="search-input"
         aria-label="Search Pokémon by name"
       />
-      <button 
-        (click)="onSearch()" 
-        class="btn btn-primary"
-        aria-label="Search"
-      >
-        Search
-      </button>
+      @if (searchName()) {
+        <button 
+          (click)="clearSearch()" 
+          class="clear-button"
+          aria-label="Clear search"
+          type="button"
+        >
+          ✕
+        </button>
+      }
     </div>
-    
-    <button 
-      (click)="clearFilters()" 
-      class="btn btn-secondary"
-      aria-label="Clear all filters"
-    >
-      Clear Filters
-    </button>
   </div>
 
   <!-- Loading State -->

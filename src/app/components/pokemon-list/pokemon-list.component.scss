@@ -15,23 +15,19 @@ h2 {
 /* Filters Section */
 .filters-section {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
+  margin-bottom: 2rem;
 }
 
-.search-group {
-  display: flex;
-  gap: 0.5rem;
+.search-wrapper {
+  position: relative;
   flex: 1;
   max-width: 500px;
 }
 
 .search-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
@@ -40,6 +36,34 @@ h2 {
   &:focus {
     outline: none;
     border-color: #dc0a2d;
+  }
+}
+
+.clear-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: #dc0a2d;
+  }
+
+  &:focus {
+    outline: 2px solid #dc0a2d;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 

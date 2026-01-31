@@ -7,6 +7,6 @@ import { PokemonListComponent } from './components/pokemon-list/pokemon-list.com
   selector: 'app-root',
   imports: [ToolbarComponent, PokemonListComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {}
