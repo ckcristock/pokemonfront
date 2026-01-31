@@ -60,6 +60,7 @@
               [alt]="pokemon.name"
               class="pokemon-image"
               loading="lazy"
+              (error)="onImageError($event)"
             />
           </div>
           <div class="pokemon-info">

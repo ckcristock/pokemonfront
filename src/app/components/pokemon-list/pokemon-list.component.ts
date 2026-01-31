@@ -53,6 +53,14 @@ export class PokemonListComponent implements OnInit {
     this.pokemonService.refreshData().subscribe();
   }
 
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    // Use a placeholder Pokéball image when image fails to load
+    img.src =
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+    img.style.transform = 'scale(1.5)';
+  }
+
   onPageChange(page: number) {
     this.currentPage.set(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
