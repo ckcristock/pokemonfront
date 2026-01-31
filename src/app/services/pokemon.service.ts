@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, of, tap, forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { ErrorHandlerService } from './error-handler.service';
 
 export interface Pokemon {
   id: number;
@@ -26,13 +27,14 @@ export interface PaginatedResponse {
 })
 export class PokemonService {
   private readonly http = inject(HttpClient);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly baseUrl = environment.apiUrl;
 
   private allPokemonsCache = signal<Pokemon[]>([]);
   readonly pokemons = signal<Pokemon[]>([]);
   readonly totalCount = signal<number>(0);
-  readonly loading = signal<boolean>(false);
-  readonly error = signal<string | null>(null);
+  readonly loading = this.errorHandler.loading;
+  readonly error = this.errorHandler.error;
 
   private extractIdFromUrl(url: string): number {
     const matches = url.match(/\/(\d+)\/?$/);
@@ -45,8 +47,8 @@ export class PokemonService {
       return of(this.allPokemonsCache());
     }
 
-    this.loading.set(true);
-    this.error.set(null);
+    this.errorHandler.setLoading(true);
+    this.errorHandler.clearError();
 
     // Load all Pokémon in batches of 100 (backend limit)
     const batchSize = 100;
@@ -77,14 +79,10 @@ export class PokemonService {
       }),
       tap((pokemons) => {
         this.allPokemonsCache.set(pokemons);
-        this.loading.set(false);
+        this.errorHandler.setLoading(false);
       }),
       catchError((err) => {
-        this.error.set(
-          'Cannot connect to backend. Please ensure the .NET server is running on port 5041.',
-        );
-        this.loading.set(false);
-        console.error('Error loading Pokémon:', err);
+        // Error is handled by interceptor
         return of([]);
       }),
     );
@@ -120,9 +118,9 @@ export class PokemonService {
     this.totalCount.set(filtered.length);
 
     if (filtered.length === 0 && name.trim()) {
-      this.error.set('No Pokémon found matching your search.');
+      this.errorHandler.handleError('No Pokémon found matching your search.');
     } else {
-      this.error.set(null);
+      this.errorHandler.clearError();
     }
   }
 
