@@ -1,0 +1,115 @@
+<div class="pokemon-container">
+  <h2>Pokémon Collection</h2>
+  
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-group">
+      <input 
+        type="text"
+        [(ngModel)]="searchName"
+        (keyup.enter)="onSearch()"
+        placeholder="Search by name..."
+        class="search-input"
+        aria-label="Search Pokémon by name"
+      />
+      <button 
+        (click)="onSearch()" 
+        class="btn btn-primary"
+        aria-label="Search"
+      >
+        Search
+      </button>
+    </div>
+    
+    <button 
+      (click)="clearFilters()" 
+      class="btn btn-secondary"
+      aria-label="Clear all filters"
+    >
+      Clear Filters
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading Pokémon...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-message" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Pokemon Grid -->
+  @if (!loading() && pokemons().length > 0) {
+    <div class="pokemon-grid">
+      @for (pokemon of pokemons(); track pokemon.id) {
+        <div class="pokemon-card">
+          <div class="pokemon-image-container">
+            <img 
+              [src]="pokemon.image" 
+              [alt]="pokemon.name"
+              class="pokemon-image"
+              loading="lazy"
+            />
+          </div>
+          <div class="pokemon-info">
+            <h3 class="pokemon-name">{{ pokemon.name }}</h3>
+            <p class="pokemon-id">#{{ pokemon.id.toString().padStart(4, '0') }}</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1 && !searchName()) {
+      <div class="pagination">
+        <button 
+          (click)="onPageChange(currentPage() - 1)"
+          [disabled]="currentPage() === 1"
+          class="pagination-btn"
+          aria-label="Previous page"
+        >
+          Previous
+        </button>
+
+        @for (page of getPageNumbers(); track page) {
+          @if (page === -1) {
+            <span class="pagination-ellipsis">...</span>
+          } @else {
+            <button 
+              (click)="onPageChange(page)"
+              [class.active]="page === currentPage()"
+              class="pagination-btn"
+              [attr.aria-label]="'Go to page ' + page"
+              [attr.aria-current]="page === currentPage() ? 'page' : null"
+            >
+              {{ page }}
+            </button>
+          }
+        }
+
+        <button 
+          (click)="onPageChange(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages()"
+          class="pagination-btn"
+          aria-label="Next page"
+        >
+          Next
+        </button>
+      </div>
+    }
+  }
+
+  <!-- No Results -->
+  @if (!loading() && pokemons().length === 0 && !error()) {
+    <div class="no-results">
+      <p>No Pokémon found</p>
+    </div>
+  }
+</div>
