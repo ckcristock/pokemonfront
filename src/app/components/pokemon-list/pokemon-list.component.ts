@@ -49,6 +49,10 @@ export class PokemonListComponent implements OnInit {
     this.searchName.set('');
   }
 
+  refresh() {
+    this.pokemonService.refreshData().subscribe();
+  }
+
   onPageChange(page: number) {
     this.currentPage.set(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });

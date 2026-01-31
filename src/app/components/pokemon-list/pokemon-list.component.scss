@@ -129,6 +129,14 @@ h2 {
 }
 
 /* Error & No Results */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
 .error-message,
 .no-results {
   text-align: center;
@@ -142,6 +150,34 @@ h2 {
   color: #d32f2f;
   border-radius: 8px;
   border: 1px solid #fcc;
+  padding: 1.5rem;
+  margin: 0;
+}
+
+.btn-refresh {
+  background: white;
+  color: #dc0a2d;
+  padding: 0.75rem 2rem;
+  border: 2px solid #dc0a2d;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background: #dc0a2d;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 10, 45, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 /* Pokemon Grid */

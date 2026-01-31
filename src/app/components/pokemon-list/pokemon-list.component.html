@@ -7,6 +7,7 @@
       <input 
         type="text"
         [(ngModel)]="searchName"
+        (keydown.escape)="clearSearch()"
         placeholder="Search by name..."
         class="search-input"
         aria-label="Search Pokémon by name"
@@ -34,8 +35,17 @@
 
   <!-- Error State -->
   @if (error() && !loading()) {
-    <div class="error-message" role="alert">
-      {{ error() }}
+    <div class="error-container">
+      <div class="error-message" role="alert">
+        {{ error() }}
+      </div>
+      <button 
+        (click)="refresh()" 
+        class="btn btn-refresh"
+        aria-label="Reload data"
+      >
+        Try Again
+      </button>
     </div>
   }
 

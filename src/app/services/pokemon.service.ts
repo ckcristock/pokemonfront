@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, map, of, tap, forkJoin } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Pokemon {
   id: number;
@@ -8,9 +9,16 @@ export interface Pokemon {
   image: string;
 }
 
-export interface PokemonResponse {
-  count: number;
-  results: Array<{ name: string; url: string }>;
+export interface PokemonDTO {
+  name: string;
+  url: string;
+}
+
+export interface PaginatedResponse {
+  total: number;
+  limit: number;
+  offset: number;
+  data: PokemonDTO[];
 }
 
 @Injectable({
@@ -18,13 +26,18 @@ export interface PokemonResponse {
 })
 export class PokemonService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://pokeapi.co/api/v2';
+  private readonly baseUrl = environment.apiUrl;
 
   private allPokemonsCache = signal<Pokemon[]>([]);
   readonly pokemons = signal<Pokemon[]>([]);
   readonly totalCount = signal<number>(0);
   readonly loading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
+
+  private extractIdFromUrl(url: string): number {
+    const matches = url.match(/\/(\d+)\/?$/);
+    return matches ? parseInt(matches[1], 10) : 0;
+  }
 
   loadAllPokemons() {
     // Only load once
@@ -35,25 +48,41 @@ export class PokemonService {
     this.loading.set(true);
     this.error.set(null);
 
-    // Load first 1000 Pokémon
-    return this.http.get<PokemonResponse>(`${this.baseUrl}/pokemon?limit=1000&offset=0`).pipe(
-      map((response) => {
-        const pokemons = response.results.map((pokemon, index) => {
-          const id = index + 1;
-          return {
-            id,
-            name: pokemon.name,
-            image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
-          };
+    // Load all Pokémon in batches of 100 (backend limit)
+    const batchSize = 100;
+    const totalToLoad = 1000; // Load first 1000 Pokémon
+    const requests = [];
+
+    for (let offset = 0; offset < totalToLoad; offset += batchSize) {
+      requests.push(
+        this.http.get<PaginatedResponse>(`${this.baseUrl}?limit=${batchSize}&offset=${offset}`),
+      );
+    }
+
+    // Execute all requests in parallel using forkJoin
+    return forkJoin(requests).pipe(
+      map((responses) => {
+        const allPokemons: Pokemon[] = [];
+        responses.forEach((response) => {
+          response.data.forEach((pokemon) => {
+            const id = this.extractIdFromUrl(pokemon.url);
+            allPokemons.push({
+              id,
+              name: pokemon.name,
+              image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+            });
+          });
         });
-        return pokemons;
+        return allPokemons;
       }),
       tap((pokemons) => {
         this.allPokemonsCache.set(pokemons);
         this.loading.set(false);
       }),
       catchError((err) => {
-        this.error.set('Error loading Pokémon. Please try again.');
+        this.error.set(
+          'Cannot connect to backend. Please ensure the .NET server is running on port 5041.',
+        );
         this.loading.set(false);
         console.error('Error loading Pokémon:', err);
         return of([]);
@@ -95,5 +124,11 @@ export class PokemonService {
     } else {
       this.error.set(null);
     }
+  }
+
+  refreshData() {
+    this.allPokemonsCache.set([]);
+    this.error.set(null);
+    return this.loadAllPokemons();
   }
 }

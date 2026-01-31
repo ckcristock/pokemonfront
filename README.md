@@ -1,8 +1,83 @@
-# Pokemonfront
+# Pokémon Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+Aplicación Angular para consumir la API de Pokémon desde un backend .NET.
 
-## Development server
+## 🚀 Requisitos Previos
+
+- Node.js (versión 18 o superior)
+- npm (versión 9 o superior)
+- Backend .NET corriendo (PokemonBackend)
+
+## 📝 Configuración del Puerto del Backend
+
+El frontend está configurado para conectarse al backend en `http://localhost:5041` por defecto.
+
+**Si tu backend corre en un puerto diferente**, edita el archivo:
+
+`src/environments/environment.ts`
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:TU_PUERTO_AQUI/api/pokemon',
+};
+```
+
+## 🔧 Instalación
+
+```bash
+npm install
+```
+
+## ▶️ Ejecutar el Proyecto
+
+1. **Asegúrate de que el backend .NET esté corriendo primero:**
+
+   ```bash
+   cd ruta/al/PokemonBackend
+   dotnet run
+   ```
+
+   Verifica el puerto que muestra en la consola (ejemplo: `http://localhost:5041`)
+
+2. **Inicia el frontend Angular:**
+
+   ```bash
+   npm start
+   ```
+
+3. Abre tu navegador en `http://localhost:4200`
+
+## 🎯 Características
+
+- ✅ Búsqueda de Pokémon en tiempo real
+- ✅ Paginación (28 items por página - 4x7 grid)
+- ✅ Filtrado por coincidencia parcial de nombre
+- ✅ Diseño responsive
+- ✅ Botón de reintento en caso de error de conexión
+
+## 🐛 Solución de Problemas
+
+### Error "Cannot connect to backend"
+
+- Verifica que el backend .NET esté corriendo
+- Verifica el puerto en la consola del backend
+- Actualiza la URL en `src/environments/environment.ts` si el puerto es diferente
+- Asegúrate de que no haya firewall bloqueando la conexión
+
+### Puerto del backend diferente
+
+Si al ejecutar `dotnet run` ves un puerto diferente al 5041:
+
+```
+Now listening on: http://localhost:XXXX
+```
+
+Actualiza el archivo `src/environments/environment.ts` con el puerto correcto.
+
+---
+
+## Development server (Angular CLI)
 
 To start a local development server, run:
 
